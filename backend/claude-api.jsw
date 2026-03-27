@@ -1,0 +1,140 @@
+// ─────────────────────────────────────────────────────────────
+// BigTaka Content Network — Backend: Claude AI Integration
+// For AI-powered content features (rewriting, translation, etc.)
+// ─────────────────────────────────────────────────────────────
+import { fetch } from "wix-fetch";
+import { getSecret } from "wix-secrets-backend";
+
+const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
+const ANTHROPIC_VERSION = "2023-06-01";
+const MODEL = "claude-sonnet-4-6-20250514";
+
+/**
+ * Call Claude API with a prompt
+ * @param {string} systemPrompt - System-level instructions
+ * @param {string} userPrompt - User message
+ * @param {number} maxTokens - Max response tokens
+ * @returns {Object} API response
+ */
+async function callClaude(systemPrompt, userPrompt, maxTokens = 2048) {
+    const apiKey = await getSecret("ANTHROPIC_API_KEY");
+
+    const response = await fetch(ANTHROPIC_API_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+            "anthropic-version": ANTHROPIC_VERSION,
+        },
+        body: JSON.stringify({
+            model: MODEL,
+            max_tokens: maxTokens,
+            system: systemPrompt,
+            messages: [{ role: "user", content: userPrompt }],
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Claude API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.content[0].text;
+}
+
+/**
+ * Translate article content from English to Bengali
+ */
+export async function translateToBengali(englishText) {
+    const systemPrompt = `You are a professional Bengali translator for a Bangladesh news/content website.
+Translate the following English text to natural, fluent Bengali (Bangla).
+Maintain the tone, style, and formatting. Keep proper nouns in English where appropriate.
+Return only the translated text, no explanations.`;
+
+    return callClaude(systemPrompt, englishText, 4096);
+}
+
+/**
+ * Translate article content from Bengali to English
+ */
+export async function translateToEnglish(bengaliText) {
+    const systemPrompt = `You are a professional English translator.
+Translate the following Bengali (Bangla) text to natural, fluent English.
+Maintain the tone, style, and formatting.
+Return only the translated text, no explanations.`;
+
+    return callClaude(systemPrompt, bengaliText, 4096);
+}
+
+/**
+ * Rewrite/rephrase content to make it unique
+ */
+export async function rewriteContent(originalText, language = "en") {
+    const langName = language === "bn" ? "Bengali (Bangla)" : "English";
+    const systemPrompt = `You are a professional content writer for a Bangladesh-focused news website.
+Rewrite the following ${langName} text to make it completely unique while preserving the key information.
+Use a slightly sensational, engaging, viral news style.
+Make it easy to read and shareable.
+Return only the rewritten text.`;
+
+    return callClaude(systemPrompt, originalText, 4096);
+}
+
+/**
+ * Generate a viral/clickbait-style headline
+ */
+export async function generateHeadline(articleSummary, language = "en") {
+    const langName = language === "bn" ? "Bengali (Bangla)" : "English";
+    const systemPrompt = `You are a headline writer for a viral news website targeting Bangladesh audiences.
+Generate 5 engaging, slightly sensational ${langName} headlines for the following article summary.
+Headlines should be curiosity-driven and shareable.
+Return only the 5 headlines, numbered 1-5.`;
+
+    return callClaude(systemPrompt, articleSummary, 512);
+}
+
+/**
+ * Generate SEO-optimized meta description
+ */
+export async function generateSeoDescription(articleTitle, articleSummary, language = "en") {
+    const langName = language === "bn" ? "Bengali (Bangla)" : "English";
+    const systemPrompt = `You are an SEO expert. Generate a ${langName} meta description (max 160 characters)
+for a news article. Make it compelling and include relevant keywords.
+Return only the meta description text.`;
+
+    return callClaude(systemPrompt, `Title: ${articleTitle}\nSummary: ${articleSummary}`, 256);
+}
+
+/**
+ * Generate article tags/keywords
+ */
+export async function generateTags(articleTitle, articleBody) {
+    const systemPrompt = `You are a content tagging specialist.
+Analyze the following article and generate 5-10 relevant tags/keywords.
+Include both English and Bengali tags where appropriate.
+Return as a JSON array of strings. Example: ["cricket", "IPL", "ক্রিকেট"]`;
+
+    const result = await callClaude(systemPrompt, `Title: ${articleTitle}\n\n${articleBody.substring(0, 1000)}`, 256);
+
+    try {
+        return JSON.parse(result);
+    } catch {
+        return result.split(",").map((t) => t.trim().replace(/["\[\]]/g, ""));
+    }
+}
+
+/**
+ * Generate a full article from a topic/headline
+ */
+export async function generateArticle(topic, language = "en", wordCount = 500) {
+    const langName = language === "bn" ? "Bengali (Bangla)" : "English";
+    const systemPrompt = `You are a professional content writer for BigTaka Content Network,
+a Bangladesh-focused news and entertainment website.
+Write a ${wordCount}-word ${langName} article about the given topic.
+Style: Engaging, easy to read, slightly sensational but factual.
+Format: Use HTML tags for headings (<h2>, <h3>), paragraphs (<p>), and bold (<strong>).
+Do NOT include the title in the body — it will be displayed separately.
+Return only the article HTML body.`;
+
+    return callClaude(systemPrompt, topic, 4096);
+}

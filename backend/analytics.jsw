@@ -1,0 +1,135 @@
+// ─────────────────────────────────────────────────────────────
+// BigTaka Content Network — Backend: Analytics Tracking
+// ─────────────────────────────────────────────────────────────
+import wixData from "wix-data";
+
+/**
+ * Track a page view (called from masterPage.js)
+ */
+export async function trackView(pageInfo) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const record = {
+        path: pageInfo.path,
+        language: pageInfo.lang,
+        source: categorizeSource(pageInfo.referrer),
+        viewDate: today,
+        viewCount: 1,
+        timestamp: new Date(pageInfo.timestamp),
+    };
+
+    await wixData.insert("SiteAnalytics", record);
+}
+
+/**
+ * Increment article view count
+ */
+export async function incrementArticleView(articleId, lang) {
+    // Update the article's viewCount
+    const article = await wixData.get("Articles", articleId);
+    if (article) {
+        article.viewCount = (article.viewCount || 0) + 1;
+        await wixData.update("Articles", article);
+    }
+
+    // Log to analytics collection
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Try to find existing daily record
+    const existing = await wixData
+        .query("SiteAnalytics")
+        .eq("articleId", articleId)
+        .eq("viewDate", today)
+        .eq("language", lang)
+        .find();
+
+    if (existing.items.length > 0) {
+        const record = existing.items[0];
+        record.viewCount = (record.viewCount || 0) + 1;
+        await wixData.update("SiteAnalytics", record);
+    } else {
+        await wixData.insert("SiteAnalytics", {
+            articleId,
+            viewDate: today,
+            viewCount: 1,
+            language: lang,
+            source: "direct",
+        });
+    }
+}
+
+/**
+ * Get trending article IDs based on views in the last N days
+ */
+export async function calculateTrending(days = 3, limit = 10) {
+    const sinceDate = new Date();
+    sinceDate.setDate(sinceDate.getDate() - days);
+    sinceDate.setHours(0, 0, 0, 0);
+
+    const results = await wixData
+        .query("SiteAnalytics")
+        .ge("viewDate", sinceDate)
+        .descending("viewCount")
+        .limit(100)
+        .find();
+
+    // Aggregate views by articleId
+    const viewMap = {};
+    results.items.forEach((record) => {
+        if (record.articleId) {
+            viewMap[record.articleId] = (viewMap[record.articleId] || 0) + (record.viewCount || 0);
+        }
+    });
+
+    // Sort by total views and return top articles
+    const sorted = Object.entries(viewMap)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, limit)
+        .map(([articleId, views]) => ({ articleId, views }));
+
+    return sorted;
+}
+
+/**
+ * Auto-update trending flags based on recent views
+ * (Call this from a scheduled job)
+ */
+export async function updateTrendingFlags() {
+    // Reset all trending flags
+    const allArticles = await wixData
+        .query("Articles")
+        .eq("isTrending", true)
+        .find();
+
+    for (const article of allArticles.items) {
+        article.isTrending = false;
+        await wixData.update("Articles", article);
+    }
+
+    // Set new trending articles
+    const trending = await calculateTrending(3, 10);
+
+    for (const { articleId } of trending) {
+        const article = await wixData.get("Articles", articleId);
+        if (article && article.status === "published") {
+            article.isTrending = true;
+            await wixData.update("Articles", article);
+        }
+    }
+
+    return { updated: trending.length };
+}
+
+/**
+ * Categorize traffic source from referrer
+ */
+function categorizeSource(referrer) {
+    if (!referrer || referrer === "direct") return "direct";
+    if (referrer.includes("facebook.com") || referrer.includes("fb.com")) return "facebook";
+    if (referrer.includes("t.me") || referrer.includes("telegram")) return "telegram";
+    if (referrer.includes("google.com")) return "organic";
+    if (referrer.includes("youtube.com")) return "youtube";
+    return "referral";
+}

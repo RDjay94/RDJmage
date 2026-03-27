@@ -1,0 +1,154 @@
+// ─────────────────────────────────────────────────────────────
+// BigTaka Content Network — Backend: Content Management API
+// Server-side web module (callable from frontend)
+// ─────────────────────────────────────────────────────────────
+import wixData from "wix-data";
+
+/**
+ * Get published articles with filters and pagination
+ */
+export async function getArticles({ category, tag, page = 1, limit = 12, sort = "publishDate", order = "desc" } = {}) {
+    let query = wixData.query("Articles").eq("status", "published");
+
+    if (category) query = query.eq("category", category);
+    if (tag) query = query.hasSome("tags", [tag]);
+
+    if (order === "desc") {
+        query = query.descending(sort);
+    } else {
+        query = query.ascending(sort);
+    }
+
+    const skip = (page - 1) * limit;
+    const results = await query.skip(skip).limit(limit).include("author").find();
+
+    return {
+        items: results.items,
+        totalCount: results.totalCount,
+        totalPages: Math.ceil(results.totalCount / limit),
+        currentPage: page,
+        hasNext: results.hasNext(),
+    };
+}
+
+/**
+ * Get a single article by slug
+ */
+export async function getArticleBySlug(slug) {
+    const results = await wixData
+        .query("Articles")
+        .eq("slug", slug)
+        .eq("status", "published")
+        .include("author")
+        .find();
+
+    return results.items.length > 0 ? results.items[0] : null;
+}
+
+/**
+ * Get trending articles (by view count)
+ */
+export async function getTrendingArticles(limit = 6) {
+    const results = await wixData
+        .query("Articles")
+        .eq("status", "published")
+        .eq("isTrending", true)
+        .descending("viewCount")
+        .limit(limit)
+        .find();
+
+    return results.items;
+}
+
+/**
+ * Get featured articles
+ */
+export async function getFeaturedArticles(limit = 3) {
+    const results = await wixData
+        .query("Articles")
+        .eq("status", "published")
+        .eq("isFeatured", true)
+        .descending("publishDate")
+        .limit(limit)
+        .include("author")
+        .find();
+
+    return results.items;
+}
+
+/**
+ * Get related articles by category (excluding current article)
+ */
+export async function getRelatedArticles(articleId, category, limit = 4) {
+    const results = await wixData
+        .query("Articles")
+        .eq("status", "published")
+        .eq("category", category)
+        .ne("_id", articleId)
+        .descending("publishDate")
+        .limit(limit)
+        .find();
+
+    return results.items;
+}
+
+/**
+ * Search articles across title, summary, and tags
+ */
+export async function searchArticles(query, limit = 20) {
+    if (!query || query.length < 2) return [];
+
+    const results = await wixData
+        .query("Articles")
+        .eq("status", "published")
+        .and(
+            wixData.query("Articles")
+                .contains("titleEn", query)
+                .or(wixData.query("Articles").contains("titleBn", query))
+                .or(wixData.query("Articles").contains("summaryEn", query))
+                .or(wixData.query("Articles").contains("summaryBn", query))
+                .or(wixData.query("Articles").hasSome("tags", [query]))
+        )
+        .descending("publishDate")
+        .limit(limit)
+        .include("author")
+        .find();
+
+    return results.items;
+}
+
+/**
+ * Get articles published today (for sitemap/automation)
+ */
+export async function getTodaysArticles() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const results = await wixData
+        .query("Articles")
+        .eq("status", "published")
+        .ge("publishDate", today)
+        .descending("publishDate")
+        .find();
+
+    return results.items;
+}
+
+/**
+ * Get article count by category
+ */
+export async function getCategoryCounts() {
+    const categories = ["cricket", "casino", "celebrity", "viral"];
+    const counts = {};
+
+    for (const cat of categories) {
+        const result = await wixData
+            .query("Articles")
+            .eq("status", "published")
+            .eq("category", cat)
+            .count();
+        counts[cat] = result;
+    }
+
+    return counts;
+}

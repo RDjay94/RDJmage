@@ -1,0 +1,107 @@
+// ─────────────────────────────────────────────────────────────
+// BigTaka Content Network — Backend: SEO Utilities
+// ─────────────────────────────────────────────────────────────
+import wixData from "wix-data";
+
+const BASE_URL = "https://www.bigtaka-content.com";
+
+/**
+ * Generate XML sitemap data for all published articles
+ * Returns an array of URL entries for the sitemap
+ */
+export async function generateSitemapData() {
+    const results = await wixData
+        .query("Articles")
+        .eq("status", "published")
+        .descending("publishDate")
+        .limit(1000)
+        .find();
+
+    const urls = [];
+
+    // Homepage (both languages)
+    urls.push(
+        { loc: `${BASE_URL}/bn`, changefreq: "hourly", priority: "1.0" },
+        { loc: `${BASE_URL}/en`, changefreq: "hourly", priority: "1.0" }
+    );
+
+    // Category pages
+    const categories = ["cricket", "casino-gaming", "celebrity-entertainment", "worldwide-viral"];
+    categories.forEach((cat) => {
+        urls.push(
+            { loc: `${BASE_URL}/bn/category/${cat}`, changefreq: "daily", priority: "0.8" },
+            { loc: `${BASE_URL}/en/category/${cat}`, changefreq: "daily", priority: "0.8" }
+        );
+    });
+
+    // Article pages (both languages)
+    results.items.forEach((article) => {
+        const lastmod = (article._updatedDate || article.publishDate).toISOString().split("T")[0];
+        urls.push(
+            { loc: `${BASE_URL}/bn/article/${article.slug}`, lastmod, changefreq: "weekly", priority: "0.7" },
+            { loc: `${BASE_URL}/en/article/${article.slug}`, lastmod, changefreq: "weekly", priority: "0.7" }
+        );
+    });
+
+    return urls;
+}
+
+/**
+ * Generate structured data for the site (Organization schema)
+ */
+export function getOrganizationSchema() {
+    return {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "BigTaka Content Network",
+        alternateName: "বিগটাকা কন্টেন্ট নেটওয়ার্ক",
+        url: BASE_URL,
+        logo: `${BASE_URL}/BigTaka-logo.png`,
+        sameAs: [
+            "https://facebook.com/bigtaka",
+            "https://t.me/bigtaka",
+            "https://youtube.com/@bigtaka",
+        ],
+    };
+}
+
+/**
+ * Generate breadcrumb structured data
+ */
+export function getBreadcrumbSchema(breadcrumbs) {
+    return {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: breadcrumbs.map((crumb, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            name: crumb.name,
+            item: crumb.url ? `${BASE_URL}${crumb.url}` : undefined,
+        })),
+    };
+}
+
+/**
+ * Auto-generate SEO-friendly meta description from article body
+ */
+export function generateMetaDescription(bodyHtml, maxLength = 160) {
+    if (!bodyHtml) return "";
+    // Strip HTML tags
+    const plainText = bodyHtml.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+    if (plainText.length <= maxLength) return plainText;
+    // Cut at last full word within limit
+    const truncated = plainText.substring(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(" ");
+    return truncated.substring(0, lastSpace) + "...";
+}
+
+/**
+ * Generate hreflang link data for an article
+ */
+export function getHreflangLinks(slug) {
+    return [
+        { rel: "alternate", href: `${BASE_URL}/bn/article/${slug}`, hreflang: "bn" },
+        { rel: "alternate", href: `${BASE_URL}/en/article/${slug}`, hreflang: "en" },
+        { rel: "alternate", href: `${BASE_URL}/bn/article/${slug}`, hreflang: "x-default" },
+    ];
+}
