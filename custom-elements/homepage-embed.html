@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', 'Hind Siliguri', sans-serif; background: #100525; color: #fff; overflow-x: hidden; }
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; height: auto; display: block; }
+
+/* ── HEADER ─────────────────────────────── */
+.header { background: #100525; border-bottom: 2px solid #500ecf; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 24px; }
+.logo { font-size: 24px; font-weight: 700; color: #500ecf; cursor: pointer; }
+.logo span { color: #89eb16; }
+.nav { display: flex; gap: 4px; }
+.nav-btn { background: transparent; border: 1px solid transparent; color: #ccc; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px; font-family: inherit; transition: all 0.3s; }
+.nav-btn:hover, .nav-btn.active { background: #500ecf; color: #fff; border-color: #500ecf; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.search-box { background: #1a0a35; border: 1px solid #2a1045; border-radius: 20px; padding: 8px 16px; color: #fff; font-size: 14px; width: 200px; outline: none; font-family: inherit; }
+.search-box::placeholder { color: #666; }
+.search-box:focus { border-color: #500ecf; }
+.lang-btn { background: #500ecf; color: #fff; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; font-family: inherit; transition: background 0.3s; }
+.lang-btn:hover { background: #6b20e8; }
+
+/* ── BREAKING TICKER ────────────────────── */
+.ticker { background: linear-gradient(90deg, #500ecf, #ff1ed7); padding: 8px 0; overflow: hidden; white-space: nowrap; }
+.ticker-inner { display: inline-block; animation: ticker 30s linear infinite; }
+.ticker-label { background: #89eb16; color: #100525; padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 12px; margin-right: 16px; text-transform: uppercase; }
+.ticker-item { margin-right: 48px; font-size: 14px; }
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* ── HERO SECTION ───────────────────────── */
+.hero-section { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; padding: 24px; max-width: 1280px; margin: 0 auto; }
+.hero-main { position: relative; border-radius: 16px; overflow: hidden; cursor: pointer; min-height: 400px; }
+.hero-main img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+.hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 32px; background: linear-gradient(transparent, rgba(16,5,37,0.95)); }
+.hero-cat { display: inline-block; background: #ff1ed7; color: #fff; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+.hero-title { font-size: 28px; font-weight: 700; line-height: 1.3; margin-bottom: 8px; }
+.hero-summary { font-size: 15px; color: #ccc; line-height: 1.5; margin-bottom: 8px; }
+.hero-meta { font-size: 13px; color: #888; }
+
+/* ── TRENDING SIDEBAR ───────────────────── */
+.trending-sidebar { background: #1a0a35; border-radius: 16px; padding: 20px; border: 1px solid #2a1045; }
+.trending-header { font-size: 18px; font-weight: 700; color: #ff1ed7; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #ff1ed7; }
+.trending-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #2a1045; cursor: pointer; transition: transform 0.2s; }
+.trending-item:hover { transform: translateX(4px); }
+.trending-item:last-child { border-bottom: none; }
+.trending-num { font-size: 24px; font-weight: 700; color: #500ecf; min-width: 32px; }
+.trending-info h4 { font-size: 14px; font-weight: 600; line-height: 1.4; margin-bottom: 4px; }
+.trending-info span { font-size: 12px; color: #89eb16; }
+
+/* ── SECTION HEADERS ────────────────────── */
+.section { max-width: 1280px; margin: 0 auto; padding: 32px 24px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.section-title { font-size: 22px; font-weight: 700; position: relative; padding-left: 16px; }
+.section-title::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(#500ecf, #ff1ed7); border-radius: 2px; }
+.section-viewall { color: #89eb16; font-size: 14px; cursor: pointer; transition: color 0.3s; }
+.section-viewall:hover { color: #fff; }
+
+/* ── CATEGORY GRID ──────────────────────── */
+.cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.cat-card { background: #1a0a35; border-radius: 12px; padding: 20px; border: 1px solid #2a1045; transition: border-color 0.3s, transform 0.3s; }
+.cat-card:hover { border-color: #500ecf; transform: translateY(-4px); }
+.cat-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 16px; font-weight: 700; }
+.cat-card-header .cat-icon { font-size: 20px; }
+.cat-article { padding: 10px 0; border-bottom: 1px solid #2a1045; cursor: pointer; transition: color 0.3s; }
+.cat-article:hover { color: #89eb16; }
+.cat-article:last-child { border-bottom: none; }
+.cat-article h5 { font-size: 14px; font-weight: 500; line-height: 1.4; margin-bottom: 4px; }
+.cat-article span { font-size: 12px; color: #666; }
+
+/* ── LATEST ARTICLES GRID ───────────────── */
+.articles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.article-card { background: #fff; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; color: #100525; }
+.article-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(80,14,207,0.2); }
+.article-card img { width: 100%; height: 200px; object-fit: cover; }
+.article-card-body { padding: 16px; }
+.article-card-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-size: 12px; }
+.article-card-cat { padding: 2px 10px; border-radius: 10px; font-weight: 600; font-size: 11px; }
+.cat-cricket { background: #e8ffc7; color: #4a8500; }
+.cat-casino { background: #FFF8E1; color: #b8860b; }
+.cat-celebrity { background: #ffe6f9; color: #c4009e; }
+.cat-viral { background: #ede0ff; color: #500ecf; }
+.article-card-date { color: #888; }
+.article-card h3 { font-size: 17px; font-weight: 600; line-height: 1.4; margin-bottom: 8px; }
+.article-card p { font-size: 14px; color: #555; line-height: 1.5; }
+.article-card-footer { display: flex; justify-content: space-between; align-items: center; padding: 0 16px 16px; font-size: 12px; color: #888; }
+
+/* ── LOAD MORE ──────────────────────────── */
+.load-more-wrap { text-align: center; margin-top: 32px; }
+.load-more-btn { background: linear-gradient(135deg, #500ecf, #ff1ed7); color: #fff; border: none; padding: 14px 48px; border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; transition: transform 0.3s, box-shadow 0.3s; }
+.load-more-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(80,14,207,0.4); }
+
+/* ── FOOTER ─────────────────────────────── */
+.footer { background: #0a0318; border-top: 2px solid #500ecf; padding: 40px 24px 20px; margin-top: 48px; }
+.footer-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; }
+.footer h4 { color: #500ecf; font-size: 16px; margin-bottom: 16px; }
+.footer p { color: #888; font-size: 14px; line-height: 1.6; }
+.footer-links { list-style: none; }
+.footer-links li { padding: 6px 0; }
+.footer-links a { color: #ccc; font-size: 14px; transition: color 0.3s; }
+.footer-links a:hover { color: #89eb16; }
+.social-links { display: flex; gap: 12px; margin-top: 8px; }
+.social-btn { background: #1a0a35; border: 1px solid #2a1045; color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all 0.3s; text-decoration: none; }
+.social-btn:hover { background: #500ecf; border-color: #500ecf; }
+.footer-copyright { text-align: center; color: #444; font-size: 13px; margin-top: 32px; padding-top: 20px; border-top: 1px solid #1a0a35; }
+
+/* ── PLACEHOLDER ────────────────────────── */
+.placeholder-img { background: linear-gradient(135deg, #1a0a35, #2a1045); display: flex; align-items: center; justify-content: center; color: #500ecf; font-size: 48px; }
+
+/* ── MOBILE RESPONSIVE ──────────────────── */
+@media (max-width: 768px) {
+  .header { flex-direction: column; gap: 12px; padding: 12px 16px; }
+  .header-left { flex-wrap: wrap; justify-content: center; }
+  .nav { flex-wrap: wrap; justify-content: center; }
+  .header-right { width: 100%; justify-content: center; }
+  .search-box { width: 150px; }
+  .hero-section { grid-template-columns: 1fr; }
+  .hero-main { min-height: 280px; }
+  .hero-title { font-size: 22px; }
+  .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .articles-grid { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr; gap: 24px; }
+}
+@media (max-width: 480px) {
+  .cat-grid { grid-template-columns: 1fr; }
+  .nav-btn { padding: 6px 10px; font-size: 12px; }
+}
+
+/* ── LOADING STATE ──────────────────────── */
+.loading { text-align: center; padding: 60px; }
+.spinner { width: 40px; height: 40px; border: 4px solid #2a1045; border-top-color: #500ecf; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo" onclick="goHome()">Big<span>Taka</span></div>
+    <nav class="nav" id="mainNav">
+      <button class="nav-btn active" onclick="filterCategory('all')">All</button>
+      <button class="nav-btn" onclick="filterCategory('cricket')">🏏 Cricket</button>
+      <button class="nav-btn" onclick="filterCategory('casino')">🎰 Gaming</button>
+      <button class="nav-btn" onclick="filterCategory('celebrity')">🎭 Celebrity</button>
+      <button class="nav-btn" onclick="filterCategory('viral')">🌍 Viral</button>
+    </nav>
+  </div>
+  <div class="header-right">
+    <input type="text" class="search-box" id="searchInput" placeholder="Search articles..." onkeyup="handleSearch(event)">
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN / বাংলা</button>
+  </div>
+</header>
+
+<!-- BREAKING NEWS TICKER -->
+<div class="ticker">
+  <div class="ticker-inner" id="tickerContent">
+    <span class="ticker-label">BREAKING</span>
+    <span class="ticker-item">Loading latest headlines...</span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="mainContent">
+  <div class="loading"><div class="spinner"></div><p>Loading BigTaka Content Network...</p></div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────
+let articles = [];
+let lang = 'bn';
+let currentCategory = 'all';
+const categories = [
+  { id: 'cricket', labelEn: 'Cricket News', labelBn: 'ক্রিকেট খবর', icon: '🏏' },
+  { id: 'casino', labelEn: 'Casino & Gaming', labelBn: 'ক্যাসিনো ও গেমিং', icon: '🎰' },
+  { id: 'celebrity', labelEn: 'Celebrity & Entertainment', labelBn: 'সেলিব্রিটি ও বিনোদন', icon: '🎭' },
+  { id: 'viral', labelEn: 'Worldwide Viral', labelBn: 'বিশ্বজুড়ে ভাইরাল', icon: '🌍' }
+];
+
+// ── LISTEN FOR DATA FROM WIX PAGE CODE ─────────────────────
+window.onmessage = function(event) {
+  if (event.data && event.data.type === 'articles') {
+    articles = event.data.items || [];
+    lang = event.data.lang || 'bn';
+    renderAll();
+  }
+};
+
+// Also try to render after a timeout in case data comes differently
+setTimeout(() => {
+  if (articles.length === 0) {
+    document.getElementById('mainContent').innerHTML = '<div class="loading"><p style="color:#ff1ed7;">Waiting for data from Wix... Make sure the page code is set up.</p><p style="color:#888;margin-top:12px;font-size:14px;">If you see this in Preview mode, the page code needs to send articles via postMessage.</p></div>';
+  }
+}, 5000);
+
+// ── RENDER ALL ─────────────────────────────────────────────
+function renderAll() {
+  const filtered = currentCategory === 'all' ? articles : articles.filter(a => a.category === currentCategory);
+  const featured = filtered.filter(a => a.isFeatured);
+  const trending = [...filtered].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 6);
+  const latest = [...filtered].sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
+
+  let html = '';
+  html += renderHero(featured[0] || latest[0], trending);
+  html += renderCategoryGrid();
+  html += renderLatestArticles(latest);
+  html += renderFooter();
+
+  document.getElementById('mainContent').innerHTML = html;
+  renderTicker(trending);
+  resizeWidget();
+}
+
+// ── HERO + TRENDING ────────────────────────────────────────
+function renderHero(hero, trending) {
+  if (!hero) return '';
+  const title = loc(hero, 'title');
+  const summary = loc(hero, 'summary');
+  const cat = categories.find(c => c.id === hero.category);
+  const catLabel = cat ? (lang === 'bn' ? cat.labelBn : cat.labelEn) : '';
+  const placeholderBg = `background: linear-gradient(135deg, #1a0a35, #500ecf); min-height:400px; display:flex; align-items:center; justify-content:center; font-size:80px;`;
+  const heroImg = hero.featuredImage ? `<img src="${hero.featuredImage}" alt="${title}">` : `<div style="${placeholderBg}">${cat ? cat.icon : '📰'}</div>`;
+
+  let trendingHtml = trending.map((item, i) => {
+    const tCat = categories.find(c => c.id === item.category);
+    return `<div class="trending-item" onclick="openArticle('${item.slug}')">
+      <div class="trending-num">${i + 1}</div>
+      <div class="trending-info">
+        <h4>${loc(item, 'title')}</h4>
+        <span>${tCat ? tCat.icon : ''} ${formatViews(item.viewCount)} views</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="hero-section">
+    <div class="hero-main" onclick="openArticle('${hero.slug}')">
+      ${heroImg}
+      <div class="hero-overlay">
+        <span class="hero-cat">${catLabel}</span>
+        <h1 class="hero-title">${title}</h1>
+        <p class="hero-summary">${summary}</p>
+        <div class="hero-meta">${formatDate(hero.publishDate)} · ${hero.readTimeMinutes || 3} ${lang === 'bn' ? 'মিনিট পড়া' : 'min read'}</div>
+      </div>
+    </div>
+    <div class="trending-sidebar">
+      <div class="trending-header">🔥 ${lang === 'bn' ? 'এখন ট্রেন্ডিং' : 'Trending Now'}</div>
+      ${trendingHtml}
+    </div>
+  </div>`;
+}
+
+// ── CATEGORY GRID ──────────────────────────────────────────
+function renderCategoryGrid() {
+  let cardsHtml = categories.map(cat => {
+    const catArticles = articles.filter(a => a.category === cat.id)
+      .sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate))
+      .slice(0, 3);
+
+    const articlesHtml = catArticles.map(a => `
+      <div class="cat-article" onclick="openArticle('${a.slug}')">
+        <h5>${loc(a, 'title')}</h5>
+        <span>${formatDate(a.publishDate)}</span>
+      </div>
+    `).join('') || `<p style="color:#666;font-size:13px;padding:12px 0;">${lang === 'bn' ? 'শীঘ্রই আসছে...' : 'Coming soon...'}</p>`;
+
+    return `<div class="cat-card">
+      <div class="cat-card-header"><span class="cat-icon">${cat.icon}</span> ${lang === 'bn' ? cat.labelBn : cat.labelEn}</div>
+      ${articlesHtml}
+      <div class="section-viewall" onclick="filterCategory('${cat.id}')" style="margin-top:12px;">${lang === 'bn' ? 'সব দেখুন →' : 'View All →'}</div>
+    </div>`;
+  }).join('');
+
+  return `<div class="section">
+    <div class="section-header">
+      <h2 class="section-title">${lang === 'bn' ? 'ক্যাটাগরি' : 'Categories'}</h2>
+    </div>
+    <div class="cat-grid">${cardsHtml}</div>
+  </div>`;
+}
+
+// ── LATEST ARTICLES ────────────────────────────────────────
+function renderLatestArticles(latest) {
+  const items = latest.slice(0, 8);
+  let cardsHtml = items.map(a => {
+    const cat = categories.find(c => c.id === a.category);
+    const catClass = `cat-${a.category}`;
+    const catLabel = cat ? (lang === 'bn' ? cat.labelBn : cat.labelEn) : '';
+    const placeholderStyle = `height:200px;background:linear-gradient(135deg,#1a0a35,#2a1045);display:flex;align-items:center;justify-content:center;font-size:48px;`;
+    const imgHtml = a.featuredImage ? `<img src="${a.featuredImage}" alt="">` : `<div style="${placeholderStyle}">${cat ? cat.icon : '📰'}</div>`;
+
+    return `<div class="article-card" onclick="openArticle('${a.slug}')">
+      ${imgHtml}
+      <div class="article-card-body">
+        <div class="article-card-meta">
+          <span class="article-card-cat ${catClass}">${catLabel}</span>
+          <span class="article-card-date">${formatDate(a.publishDate)}</span>
+        </div>
+        <h3>${loc(a, 'title')}</h3>
+        <p>${truncate(loc(a, 'summary'), 120)}</p>
+      </div>
+      <div class="article-card-footer">
+        <span>${a.readTimeMinutes || 3} ${lang === 'bn' ? 'মিনিট' : 'min read'}</span>
+        <span>👁 ${formatViews(a.viewCount)}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="section">
+    <div class="section-header">
+      <h2 class="section-title">${lang === 'bn' ? 'সর্বশেষ আর্টিকেল' : 'Latest Articles'}</h2>
+    </div>
+    <div class="articles-grid">${cardsHtml}</div>
+    ${latest.length > 8 ? `<div class="load-more-wrap"><button class="load-more-btn" onclick="loadMore()">${lang === 'bn' ? 'আরও দেখুন' : 'Load More'}</button></div>` : ''}
+  </div>`;
+}
+
+// ── FOOTER ─────────────────────────────────────────────────
+function renderFooter() {
+  return `<footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <h4>${lang === 'bn' ? 'বিগটাকা কন্টেন্ট নেটওয়ার্ক সম্পর্কে' : 'About BigTaka Content Network'}</h4>
+        <p>${lang === 'bn' ? 'বাংলাদেশ এবং বিশ্ব থেকে সর্বশেষ ক্রিকেট খবর, বিনোদন আপডেট এবং ট্রেন্ডিং স্টোরির জন্য আপনার বিশ্বস্ত উৎস।' : 'Your go-to source for the latest cricket news, entertainment updates, and trending stories from Bangladesh and around the world.'}</p>
+      </div>
+      <div>
+        <h4>${lang === 'bn' ? 'দ্রুত লিংক' : 'Quick Links'}</h4>
+        <ul class="footer-links">
+          <li><a href="#" onclick="filterCategory('cricket')">🏏 ${lang === 'bn' ? 'ক্রিকেট খবর' : 'Cricket News'}</a></li>
+          <li><a href="#" onclick="filterCategory('casino')">🎰 ${lang === 'bn' ? 'ক্যাসিনো ও গেমিং' : 'Casino & Gaming'}</a></li>
+          <li><a href="#" onclick="filterCategory('celebrity')">🎭 ${lang === 'bn' ? 'সেলিব্রিটি ও বিনোদন' : 'Celebrity & Entertainment'}</a></li>
+          <li><a href="#" onclick="filterCategory('viral')">🌍 ${lang === 'bn' ? 'বিশ্বজুড়ে ভাইরাল' : 'Worldwide Viral'}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>${lang === 'bn' ? 'আমাদের অনুসরণ করুন' : 'Follow Us'}</h4>
+        <div class="social-links">
+          <a href="https://facebook.com/bigtaka" target="_blank" class="social-btn">📘</a>
+          <a href="https://t.me/bigtaka" target="_blank" class="social-btn">✈️</a>
+          <a href="https://youtube.com/@bigtaka" target="_blank" class="social-btn">▶️</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">© ${lang === 'bn' ? '২০২৬ বিগটাকা কন্টেন্ট নেটওয়ার্ক। সর্বস্বত্ব সংরক্ষিত।' : '2026 BigTaka Content Network. All rights reserved.'}</div>
+  </footer>`;
+}
+
+// ── TICKER ──────────────────────────────────────────────────
+function renderTicker(trending) {
+  const items = trending.slice(0, 5).map(a => `<span class="ticker-item">${loc(a, 'title')}</span>`).join('');
+  const tickerEl = document.getElementById('tickerContent');
+  if (tickerEl) {
+    tickerEl.innerHTML = `<span class="ticker-label">🔴 ${lang === 'bn' ? 'ব্রেকিং' : 'BREAKING'}</span>${items}${items}`;
+  }
+}
+
+// ── HELPERS ─────────────────────────────────────────────────
+function loc(item, field) {
+  const suffix = lang === 'bn' ? 'Bn' : 'En';
+  return item[field + suffix] || item[field + 'En'] || '';
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (lang === 'bn') {
+    const bnMonths = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+    const bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+    const day = String(d.getDate()).split('').map(c => bnDigits[c] || c).join('');
+    const year = String(d.getFullYear()).split('').map(c => bnDigits[c] || c).join('');
+    return `${day} ${bnMonths[d.getMonth()]}, ${year}`;
+  }
+  return d.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+}
+
+function formatViews(count) {
+  if (!count) return '0';
+  if (count >= 1000) return (count/1000).toFixed(1) + 'K';
+  return String(count);
+}
+
+function truncate(text, max) {
+  if (!text || text.length <= max) return text || '';
+  return text.substring(0, max).trim() + '...';
+}
+
+// ── ACTIONS ────────────────────────────────────────────────
+function filterCategory(cat) {
+  currentCategory = cat;
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const idx = cat === 'all' ? 0 : categories.findIndex(c => c.id === cat) + 1;
+  if (navBtns[idx]) navBtns[idx].classList.add('active');
+  renderAll();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleLang() {
+  lang = lang === 'bn' ? 'en' : 'bn';
+  document.getElementById('langBtn').textContent = lang === 'bn' ? 'EN / বাংলা' : 'বাংলা / EN';
+  renderAll();
+}
+
+function openArticle(slug) {
+  // Send message to Wix parent to navigate
+  window.parent.postMessage({ type: 'navigate', slug: slug, lang: lang }, '*');
+}
+
+function goHome() {
+  currentCategory = 'all';
+  renderAll();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function handleSearch(event) {
+  if (event.key === 'Enter') {
+    const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (query.length < 2) return;
+    const results = articles.filter(a =>
+      (a.titleEn || '').toLowerCase().includes(query) ||
+      (a.titleBn || '').includes(query) ||
+      (a.summaryEn || '').toLowerCase().includes(query) ||
+      (a.summaryBn || '').includes(query)
+    );
+    articles = results.length > 0 ? results : articles;
+    renderAll();
+  }
+}
+
+function loadMore() {
+  // In full implementation, would fetch next page
+  alert(lang === 'bn' ? 'আরও আর্টিকেল শীঘ্রই আসছে!' : 'More articles coming soon!');
+}
+
+function resizeWidget() {
+  // Tell Wix to resize the HtmlComponent
+  const height = document.body.scrollHeight;
+  window.parent.postMessage({ type: 'resize', height: height }, '*');
+}
+</script>
+</body>
+</html>
