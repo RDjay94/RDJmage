@@ -13,8 +13,9 @@ export const SITE_CONFIG = {
     brand: {
         name: "BigTaka",
         nameBn: "বিগটাকা",
-        primaryColor: "#FF6B00",
-        secondaryColor: "#1A1A2E",
+        primaryColor: "#500ecf",
+        secondaryColor: "#89eb16",
+        secondaryColor2: "#ff1ed7",
         accentColor: "#FFD700",
         logoUrl: "/BigTaka-logo.png",
     },

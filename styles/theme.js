@@ -5,22 +5,24 @@
 
 export const THEME = {
     colors: {
-        primary: "#FF6B00",        // BigTaka orange
-        primaryDark: "#E05500",
-        secondary: "#1A1A2E",      // Dark navy
+        primary: "#500ecf",        // BigTaka purple
+        primaryDark: "#3a0a94",
+        secondary: "#89eb16",      // Neon green
+        secondary2: "#ff1ed7",     // Hot pink
         accent: "#FFD700",         // Gold
-        background: "#F5F5F5",     // Light gray background
+        background: "#100525",     // Deep dark purple background
         cardBg: "#FFFFFF",
-        textPrimary: "#1A1A2E",
+        lightBg: "#F5F5F5",       // Light sections
+        textPrimary: "#100525",
         textSecondary: "#555555",
         textLight: "#FFFFFF",
-        border: "#E0E0E0",
-        success: "#28A745",
-        trending: "#FF4444",
-        cricket: "#2E7D32",        // Green for cricket
+        border: "#2a1045",
+        success: "#89eb16",
+        trending: "#ff1ed7",
+        cricket: "#89eb16",        // Neon green for cricket
         casino: "#FFD700",         // Gold for casino
-        celebrity: "#E91E63",      // Pink for celebrity
-        viral: "#FF5722",          // Deep orange for viral
+        celebrity: "#ff1ed7",      // Hot pink for celebrity
+        viral: "#500ecf",          // Purple for viral
     },
 
     fonts: {
@@ -66,8 +68,8 @@ export const THEME = {
  * Category-specific color mapping for badges/labels
  */
 export const CATEGORY_COLORS = {
-    cricket: { bg: "#E8F5E9", text: "#2E7D32", border: "#4CAF50" },
-    casino: { bg: "#FFF8E1", text: "#F57F17", border: "#FFD700" },
-    celebrity: { bg: "#FCE4EC", text: "#C2185B", border: "#E91E63" },
-    viral: { bg: "#FBE9E7", text: "#D84315", border: "#FF5722" },
+    cricket: { bg: "#e8ffc7", text: "#4a8500", border: "#89eb16" },
+    casino: { bg: "#FFF8E1", text: "#b8860b", border: "#FFD700" },
+    celebrity: { bg: "#ffe6f9", text: "#c4009e", border: "#ff1ed7" },
+    viral: { bg: "#ede0ff", text: "#500ecf", border: "#7b3fe0" },
 };
