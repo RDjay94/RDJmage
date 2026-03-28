@@ -1,0 +1,104 @@
+// ─────────────────────────────────────────────────────────────
+// BigTaka Content Network — Backend: RedTrack CAPI Integration
+// Server-side Conversions API calls to RedTrack
+// ─────────────────────────────────────────────────────────────
+import { fetch } from "wix-fetch";
+import { SITE_CONFIG } from "public/config.js";
+
+const RT_CONFIG = SITE_CONFIG.redtrack;
+
+/**
+ * Send a conversion event to RedTrack via Conversions API (CAPI)
+ *
+ * @param {Object} params
+ * @param {string} params.clickId - RedTrack click ID (rtkclkid from URL)
+ * @param {string} params.eventName - Conversion event name (e.g. "article_view")
+ * @param {number} [params.revenue] - Optional revenue amount
+ * @param {string} [params.currency] - Optional currency code (e.g. "USD")
+ * @param {string} [params.subId] - Optional sub-tracking parameter
+ * @param {string} [params.ip] - Visitor IP address
+ * @param {string} [params.userAgent] - Visitor user agent
+ */
+export async function sendConversion(params) {
+    const { clickId, eventName, revenue, currency, subId, ip, userAgent } = params;
+
+    if (!clickId) {
+        return { success: false, error: "No click ID provided" };
+    }
+
+    // Build the RedTrack CAPI request URL
+    const queryParams = new URLSearchParams();
+    queryParams.append("clickid", clickId);
+    queryParams.append("event", eventName || "conversion");
+    queryParams.append("api_key", RT_CONFIG.apiKey);
+
+    if (revenue !== undefined && revenue !== null) {
+        queryParams.append("revenue", String(revenue));
+    }
+    if (currency) {
+        queryParams.append("currency", currency);
+    }
+    if (subId) {
+        queryParams.append("sub1", subId);
+    }
+
+    const url = `${RT_CONFIG.conversionEndpoint}?${queryParams.toString()}`;
+
+    const headers = {
+        "Content-Type": "application/json",
+    };
+    if (ip) headers["X-Forwarded-For"] = ip;
+    if (userAgent) headers["User-Agent"] = userAgent;
+
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers,
+        });
+
+        if (response.ok) {
+            return { success: true };
+        } else {
+            const errorText = await response.text();
+            console.error("RedTrack CAPI error:", response.status, errorText);
+            return { success: false, error: errorText };
+        }
+    } catch (error) {
+        console.error("RedTrack CAPI fetch error:", error.message);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Track a page view conversion in RedTrack
+ */
+export async function trackPageViewConversion(clickId, pageInfo) {
+    return sendConversion({
+        clickId,
+        eventName: RT_CONFIG.events.pageView,
+        subId: pageInfo.path || "",
+    });
+}
+
+/**
+ * Track an article view conversion in RedTrack
+ */
+export async function trackArticleConversion(clickId, articleInfo) {
+    return sendConversion({
+        clickId,
+        eventName: RT_CONFIG.events.articleView,
+        subId: articleInfo.articleId || "",
+    });
+}
+
+/**
+ * Track a CTA click conversion in RedTrack (e.g. BigTaka banner click)
+ */
+export async function trackCtaConversion(clickId, ctaInfo) {
+    return sendConversion({
+        clickId,
+        eventName: RT_CONFIG.events.ctaClick,
+        revenue: ctaInfo.revenue || 0,
+        subId: ctaInfo.ctaId || "",
+    });
+}

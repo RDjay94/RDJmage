@@ -5,7 +5,7 @@ import wixData from "wix-data";
 import wixLocation from "wix-location";
 import wixWindow from "wix-window";
 import wixSeo from "wix-seo";
-import { getCurrentLang, getLabels } from "public/masterPage.js";
+import { getCurrentLang, getLabels, getRedTrackClickId } from "public/masterPage.js";
 import { SITE_CONFIG } from "public/config.js";
 import {
     localize, formatDate, articleUrl, truncate,
@@ -54,8 +54,9 @@ async function loadArticle(slug, lang, labels) {
     // SEO
     setupArticleSEO(currentArticle, lang);
 
-    // Track view
+    // Track view (internal analytics + RedTrack CAPI)
     trackArticleView(currentArticle._id, lang);
+    trackRedTrackArticleView(currentArticle);
 
     // Load related articles
     loadRelatedArticles(currentArticle, lang, labels);
@@ -246,6 +247,7 @@ function setupBigTakaCTA(article, lang) {
                 (lang === "bn" ? "বিগটাকায় যান →" : "Visit BigTaka →");
         }
         $w("#bigTakaCTA").onClick(() => {
+            trackRedTrackCtaClick(article);
             wixWindow.openUrl(article.bigTakaLink, "_blank");
         });
     }
@@ -287,6 +289,30 @@ function setupShareButtons(article, lang) {
 function trackArticleView(articleId, lang) {
     import("backend/analytics.jsw").then((analytics) => {
         analytics.incrementArticleView(articleId, lang).catch(() => {});
+    });
+}
+
+// ── RedTrack Conversion Tracking ───────────────────────────
+
+function trackRedTrackArticleView(article) {
+    const clickId = getRedTrackClickId();
+    if (!clickId) return;
+
+    import("backend/redtrack.jsw").then((redtrack) => {
+        redtrack.trackArticleConversion(clickId, {
+            articleId: article._id,
+        }).catch(() => {});
+    });
+}
+
+function trackRedTrackCtaClick(article) {
+    const clickId = getRedTrackClickId();
+    if (!clickId) return;
+
+    import("backend/redtrack.jsw").then((redtrack) => {
+        redtrack.trackCtaConversion(clickId, {
+            ctaId: article._id,
+        }).catch(() => {});
     });
 }
 

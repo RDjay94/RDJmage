@@ -191,6 +191,41 @@ export function get_feed(request) {
         });
 }
 
+/**
+ * GET /api/redtrack-postback
+ * Receives postback/callback from RedTrack for conversion verification.
+ * RedTrack can be configured to send postbacks to this endpoint
+ * when a conversion is confirmed on the network side.
+ *
+ * Query params: clickid, status, payout, currency
+ */
+export function get_redtrackPostback(request) {
+    const { clickid, status, payout, currency } = request.query;
+
+    if (!clickid) {
+        return badRequest({ body: { error: "clickid is required" } });
+    }
+
+    // Log the postback for reconciliation
+    return wixData
+        .insert("RedTrackPostbacks", {
+            clickId: clickid,
+            status: status || "approved",
+            payout: payout ? parseFloat(payout) : 0,
+            currency: currency || "USD",
+            receivedAt: new Date(),
+        })
+        .then(() => {
+            return ok({
+                headers: { "Content-Type": "application/json" },
+                body: { success: true },
+            });
+        })
+        .catch((error) => {
+            return serverError({ body: { error: error.message } });
+        });
+}
+
 // ── Helper ──────────────────────────────────────────────────
 
 function sanitizeArticle(article) {

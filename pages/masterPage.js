@@ -8,17 +8,22 @@ import wixSeo from "wix-seo";
 import wixStorage from "wix-storage-frontend";
 import { SITE_CONFIG, UI_LABELS } from "public/config.js";
 
+// RedTrack click ID key for session storage
+const RT_CLICK_ID_KEY = "redtrack_click_id";
+
 // ── State ──────────────────────────────────────────────────
 let currentLang = "bn"; // default Bengali
 
 $w.onReady(function () {
     initLanguage();
+    captureRedTrackClickId();
     setupNavigation();
     setupLanguageToggle();
     setupSearch();
     setupFooter();
     setupStickyHeader();
     trackPageView();
+    trackRedTrackPageView();
 });
 
 // ── Language System ─────────────────────────────────────────
@@ -242,6 +247,47 @@ function trackPageView() {
             // Silently fail — analytics should never break the page
         });
     });
+}
+
+// ── RedTrack Integration ───────────────────────────────────
+
+/**
+ * Capture RedTrack click ID from URL query parameters and store in session.
+ * When a visitor arrives via a RedTrack campaign link, the URL contains
+ * a click ID parameter (e.g. ?rtkclkid=abc123). We store this so it
+ * persists across page navigations for server-side conversion tracking.
+ */
+function captureRedTrackClickId() {
+    const clickIdParam = SITE_CONFIG.redtrack.clickIdParam;
+    const query = wixLocation.query;
+
+    if (query[clickIdParam]) {
+        wixStorage.session.setItem(RT_CLICK_ID_KEY, query[clickIdParam]);
+    }
+}
+
+/**
+ * Send a page view conversion to RedTrack via CAPI (server-side).
+ * Only fires if a RedTrack click ID is present in session storage.
+ */
+function trackRedTrackPageView() {
+    const clickId = wixStorage.session.getItem(RT_CLICK_ID_KEY);
+    if (!clickId) return;
+
+    import("backend/redtrack.jsw").then((redtrack) => {
+        redtrack.trackPageViewConversion(clickId, {
+            path: wixLocation.path.join("/"),
+        }).catch(() => {
+            // Silently fail — tracking should never break the page
+        });
+    });
+}
+
+/**
+ * Get the stored RedTrack click ID (used by page-level code like Article.js)
+ */
+export function getRedTrackClickId() {
+    return wixStorage.session.getItem(RT_CLICK_ID_KEY);
 }
 
 // ── Exported Helpers (available to page code) ───────────────

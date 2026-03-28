@@ -108,6 +108,19 @@
  *  placement       (Text)       — body | cta | sidebar
  */
 
+/**
+ * Collection: "RedTrackPostbacks"
+ * Stores postback data received from RedTrack for conversion reconciliation
+ *
+ * Fields:
+ *  _id             (Text)       — Auto-generated
+ *  clickId         (Text)       — RedTrack click ID
+ *  status          (Text)       — Conversion status (approved, pending, rejected)
+ *  payout          (Number)     — Payout amount from network
+ *  currency        (Text)       — Currency code (e.g., "USD")
+ *  receivedAt      (Date)       — When the postback was received
+ */
+
 export const COLLECTION_NAMES = {
     ARTICLES: "Articles",
     AUTHORS: "Authors",
@@ -115,4 +128,5 @@ export const COLLECTION_NAMES = {
     TAGS: "Tags",
     ANALYTICS: "SiteAnalytics",
     BACKLINKS: "Backlinks",
+    REDTRACK_POSTBACKS: "RedTrackPostbacks",
 };

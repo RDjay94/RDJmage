@@ -52,6 +52,27 @@ export const SITE_CONFIG = {
         telegram: "https://t.me/bigtaka",
         youtube: "https://youtube.com/@bigtaka",
     },
+
+    // RedTrack CAPI Integration
+    // Replace these with your actual RedTrack credentials
+    redtrack: {
+        // Your RedTrack domain (found in RedTrack dashboard → Settings → Domain)
+        domain: "REPLACE_WITH_YOUR_REDTRACK_DOMAIN", // e.g. "yourtracker.redtrack.io"
+        // Your RedTrack API key (found in RedTrack dashboard → Settings → API Access)
+        apiKey: "REPLACE_WITH_YOUR_REDTRACK_API_KEY",
+        // Campaign ID from RedTrack for bigtaka.com traffic
+        campaignId: "REPLACE_WITH_YOUR_CAMPAIGN_ID",
+        // Conversion API endpoint
+        conversionEndpoint: "https://api.redtrack.io/conversion",
+        // Click ID parameter name used in your RedTrack campaign URLs
+        clickIdParam: "rtkclkid",
+        // Event names for different conversion types
+        events: {
+            pageView: "pageview",
+            articleView: "article_view",
+            ctaClick: "cta_click",
+        },
+    },
 };
 
 // Language labels used across the site
