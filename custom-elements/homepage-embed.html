@@ -181,7 +181,56 @@ const categories = [
   { id: 'viral', labelEn: 'Worldwide Viral', labelBn: 'বিশ্বজুড়ে ভাইরাল', icon: '🌍' }
 ];
 
-// ── LISTEN FOR DATA FROM WIX PAGE CODE ─────────────────────
+// ── FETCH DATA DIRECTLY FROM WIX REST API ──────────────────
+const API_KEY = 'IST.eyJraWQiOiJQb3pIX2FDMiIsImFsZyI6IlJTMjU2In0.eyJkYXRhIjoie1wiaWRcIjpcIjMyOGYzYmNkLTdmNWYtNGU0Yy1iOTllLTM4NTYyYzZkOGM1MFwiLFwiaWRlbnRpdHlcIjp7XCJ0eXBlXCI6XCJhcHBsaWNhdGlvblwiLFwiaWRcIjpcImUzZTY4MDdlLWMxN2QtNGYyOC05NjBhLWFhNGMyY2M1NjE0M1wifSxcInRlbmFudFwiOntcInR5cGVcIjpcImFjY291bnRcIixcImlkXCI6XCJkZDMxMTVjZi05OTBiLTRmYzYtODhjOS1mMWZlNDFjMGRiOWZcIn19IiwiaWF0IjoxNzc0NjQwMDQxfQ.N_3toLr9TH3vmHO0g1aB3UcZHuxca8gbzIEqJJgBJMWVcq_rbDHrKRsGjd46MoIkSzKo7q0XPOD2eAvfrHqMd9S7ATHSfqdgvEl989fvvHSu_6_QCtxcDGsAlbfnj5XVCh80HLN2EfQufY2rddhbTfl7ZJuXRmtfo6sN6mY-dDKVUirtduHdlfSkW6mwUmbvHK7Gl-LCm_1L82RsR7gkjoS8kgbw86t0e7hqSfSLTCn6kkazvpKw1CXqSNij5nTKSvzDRRVnd1txfW0E2NRZRYKG5NK2pie1dpUBAwLECu0Nk9qslKJGJ5Q0jPQr-4lM8TgWAAxvpGyrl-vPX4qDCQ';
+const SITE_ID = 'e807b04d-d533-4c21-94ab-9454c2659727';
+
+async function fetchArticles() {
+  try {
+    const response = await fetch('https://www.wixapis.com/wix-data/v2/items/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': API_KEY,
+        'wix-site-id': SITE_ID
+      },
+      body: JSON.stringify({
+        dataCollectionId: 'Articles',
+        query: {
+          filter: { status: 'published' },
+          sort: [{ fieldName: 'publishDate', order: 'DESC' }],
+          paging: { limit: 50 }
+        }
+      })
+    });
+    const data = await response.json();
+    if (data.dataItems) {
+      articles = data.dataItems.map(item => {
+        const d = item.data;
+        return {
+          _id: d._id,
+          titleEn: d.titleEn,
+          titleBn: d.titleBn,
+          slug: d.slug,
+          summaryEn: d.summaryEn,
+          summaryBn: d.summaryBn,
+          category: d.category,
+          featuredImage: d.featuredImage,
+          isFeatured: d.isFeatured,
+          isTrending: d.isTrending,
+          viewCount: d.viewCount,
+          readTimeMinutes: d.readTimeMinutes,
+          publishDate: d.publishDate ? (d.publishDate.$date || d.publishDate) : null,
+        };
+      });
+      renderAll();
+    }
+  } catch (err) {
+    document.getElementById('mainContent').innerHTML = '<div class="loading"><p style="color:#ff1ed7;">Error loading articles. Please refresh.</p><p style="color:#888;margin-top:8px;font-size:13px;">' + err.message + '</p></div>';
+  }
+}
+
+// Also listen for data from Wix page code (backup method)
 window.onmessage = function(event) {
   if (event.data && event.data.type === 'articles') {
     articles = event.data.items || [];
@@ -190,12 +239,8 @@ window.onmessage = function(event) {
   }
 };
 
-// Also try to render after a timeout in case data comes differently
-setTimeout(() => {
-  if (articles.length === 0) {
-    document.getElementById('mainContent').innerHTML = '<div class="loading"><p style="color:#ff1ed7;">Waiting for data from Wix... Make sure the page code is set up.</p><p style="color:#888;margin-top:12px;font-size:14px;">If you see this in Preview mode, the page code needs to send articles via postMessage.</p></div>';
-  }
-}, 5000);
+// Fetch on load
+fetchArticles();
 
 // ── RENDER ALL ─────────────────────────────────────────────
 function renderAll() {
