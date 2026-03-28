@@ -13,8 +13,8 @@ img { max-width: 100%; height: auto; display: block; }
 /* ── HEADER ─────────────────────────────── */
 .header { background: #100525; border-bottom: 2px solid #500ecf; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
 .header-left { display: flex; align-items: center; gap: 24px; }
-.logo { font-size: 24px; font-weight: 700; color: #500ecf; cursor: pointer; }
-.logo span { color: #89eb16; }
+.logo { cursor: pointer; display: flex; align-items: center; }
+.logo img { height: 40px; width: auto; object-fit: contain; }
 .nav { display: flex; gap: 4px; }
 .nav-btn { background: transparent; border: 1px solid transparent; color: #ccc; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px; font-family: inherit; transition: all 0.3s; }
 .nav-btn:hover, .nav-btn.active { background: #500ecf; color: #fff; border-color: #500ecf; }
@@ -141,7 +141,7 @@ img { max-width: 100%; height: auto; display: block; }
 <!-- HEADER -->
 <header class="header">
   <div class="header-left">
-    <div class="logo" onclick="goHome()">Big<span>Taka</span></div>
+    <div class="logo" onclick="goHome()"><img src="https://static.wixstatic.com/media/dd3115_e9c74b5c2fe74816a38f3aea59483646~mv2.jpg/v1/fill/w_200,h_50,al_c,q_85" alt="BigTaka" /></div>
     <nav class="nav" id="mainNav">
       <button class="nav-btn active" onclick="filterCategory('all')">All</button>
       <button class="nav-btn" onclick="filterCategory('cricket')">🏏 Cricket</button>
