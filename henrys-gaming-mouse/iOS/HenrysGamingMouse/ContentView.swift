@@ -35,7 +35,7 @@ struct ContentView: View {
                 .font(.headline)
                 .foregroundStyle(.white)
             Spacer()
-            Text("RDJMouse")
+            Text("Henry's Gaming Mouse")
                 .font(.system(.title3, design: .rounded).weight(.semibold))
                 .foregroundStyle(.white)
         }
@@ -98,11 +98,11 @@ struct ContentView: View {
     private func wireMotion() {
         motion.onDelta = { [weak peripheral] dx, dy in
             guard let peripheral else { return }
-            peripheral.send(RDJMouseBLE.encode(type: .move, dx: dx, dy: dy))
+            peripheral.send(HenrysGamingMouseBLE.encode(type: .move, dx: dx, dy: dy))
         }
     }
 
-    private func send(_ type: RDJMouseBLE.EventType, dx: Int16 = 0, dy: Int16 = 0) {
-        peripheral.send(RDJMouseBLE.encode(type: type, dx: dx, dy: dy))
+    private func send(_ type: HenrysGamingMouseBLE.EventType, dx: Int16 = 0, dy: Int16 = 0) {
+        peripheral.send(HenrysGamingMouseBLE.encode(type: type, dx: dx, dy: dy))
     }
 }

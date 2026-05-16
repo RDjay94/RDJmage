@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct RDJMouseApp: App {
+struct HenrysGamingMouseApp: App {
     @StateObject private var peripheral = BLEPeripheralService()
     @StateObject private var motion = MotionManager()
 

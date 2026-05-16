@@ -9,7 +9,7 @@ final class BLECentralService: NSObject, ObservableObject {
     private var manager: CBCentralManager!
     private var phone: CBPeripheral?
     private let cursor = CursorController()
-    private let queue = DispatchQueue(label: "rdjmouse.ble.central", qos: .userInteractive)
+    private let queue = DispatchQueue(label: "henrysgamingmouse.ble.central", qos: .userInteractive)
 
     override init() {
         super.init()
@@ -28,7 +28,7 @@ final class BLECentralService: NSObject, ObservableObject {
         guard manager.state == .poweredOn else { return }
         manager.stopScan()
         DispatchQueue.main.async { self.discovered = [] }
-        manager.scanForPeripherals(withServices: [RDJMouseBLE.serviceUUID], options: [
+        manager.scanForPeripherals(withServices: [HenrysGamingMouseBLE.serviceUUID], options: [
             CBCentralManagerScanOptionAllowDuplicatesKey: false
         ])
         DispatchQueue.main.async { self.statusText = "Scanning…" }
@@ -50,7 +50,7 @@ extension BLECentralService: CBCentralManagerDelegate {
             }
         }
         if central.state == .poweredOn {
-            central.scanForPeripherals(withServices: [RDJMouseBLE.serviceUUID], options: nil)
+            central.scanForPeripherals(withServices: [HenrysGamingMouseBLE.serviceUUID], options: nil)
         }
     }
 
@@ -71,7 +71,7 @@ extension BLECentralService: CBCentralManagerDelegate {
             self.isConnected = true
             self.statusText = "Connected to \(peripheral.name ?? "phone")"
         }
-        peripheral.discoverServices([RDJMouseBLE.serviceUUID])
+        peripheral.discoverServices([HenrysGamingMouseBLE.serviceUUID])
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
@@ -79,23 +79,23 @@ extension BLECentralService: CBCentralManagerDelegate {
             self.isConnected = false
             self.statusText = "Disconnected — scanning…"
         }
-        central.scanForPeripherals(withServices: [RDJMouseBLE.serviceUUID], options: nil)
+        central.scanForPeripherals(withServices: [HenrysGamingMouseBLE.serviceUUID], options: nil)
     }
 }
 
 extension BLECentralService: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
-        guard let service = peripheral.services?.first(where: { $0.uuid == RDJMouseBLE.serviceUUID }) else { return }
-        peripheral.discoverCharacteristics([RDJMouseBLE.inputCharacteristicUUID], for: service)
+        guard let service = peripheral.services?.first(where: { $0.uuid == HenrysGamingMouseBLE.serviceUUID }) else { return }
+        peripheral.discoverCharacteristics([HenrysGamingMouseBLE.inputCharacteristicUUID], for: service)
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        guard let char = service.characteristics?.first(where: { $0.uuid == RDJMouseBLE.inputCharacteristicUUID }) else { return }
+        guard let char = service.characteristics?.first(where: { $0.uuid == HenrysGamingMouseBLE.inputCharacteristicUUID }) else { return }
         peripheral.setNotifyValue(true, for: char)
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        guard let data = characteristic.value, let packet = RDJMouseBLE.decode(data) else { return }
+        guard let data = characteristic.value, let packet = HenrysGamingMouseBLE.decode(data) else { return }
         cursor.handle(packet)
     }
 }

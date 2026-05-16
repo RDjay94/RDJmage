@@ -9,7 +9,7 @@ final class CursorController {
     private var leftDown = false
     private var rightDown = false
 
-    func handle(_ packet: RDJMouseBLE.Packet) {
+    func handle(_ packet: HenrysGamingMouseBLE.Packet) {
         switch packet.type {
         case .move:
             move(dx: CGFloat(packet.dx), dy: CGFloat(packet.dy))

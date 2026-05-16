@@ -27,7 +27,7 @@ struct StatusView: View {
             Button("Disconnect") { central.disconnect() }
                 .disabled(!central.isConnected)
             Divider()
-            Button("Quit RDJMouse Host") { NSApp.terminate(nil) }
+            Button("Quit Henry's Gaming Mouse Host") { NSApp.terminate(nil) }
         }
         .padding(12)
         .frame(width: 240)

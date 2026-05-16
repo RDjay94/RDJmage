@@ -1,12 +1,13 @@
 import CoreBluetooth
 import Foundation
 
-/// Shared BLE protocol between the iOS peripheral (RDJMouse) and the
-/// macOS central (RDJMouseHost). Both apps must use these UUIDs and the
-/// same packet layout. iOS cannot advertise the standard HID-over-GATT
-/// profile (0x1812 is reserved by Apple), so we expose a custom service
-/// and translate to OS-level events on the Mac side via CGEvent.
-public enum RDJMouseBLE {
+/// Shared BLE protocol between Henry's Gaming Mouse (iOS peripheral) and
+/// Henry's Gaming Mouse Host (macOS central). Both apps must use these
+/// UUIDs and the same packet layout. iOS cannot advertise the standard
+/// HID-over-GATT profile (0x1812 is reserved by Apple), so we expose a
+/// custom service and translate to OS-level events on the Mac side via
+/// CGEvent.
+public enum HenrysGamingMouseBLE {
     /// Custom GATT service the iOS app advertises and the Mac scans for.
     public static let serviceUUID = CBUUID(string: "F1B5A2C0-1E3A-4D8E-9B6C-7A0E5C9D1F23")
 

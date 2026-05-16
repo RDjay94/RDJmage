@@ -15,7 +15,7 @@ final class BLEPeripheralService: NSObject, ObservableObject {
 
     private var manager: CBPeripheralManager!
     private var inputCharacteristic: CBMutableCharacteristic!
-    private let queue = DispatchQueue(label: "rdjmouse.ble.peripheral", qos: .userInteractive)
+    private let queue = DispatchQueue(label: "henrysgamingmouse.ble.peripheral", qos: .userInteractive)
 
     override init() {
         super.init()
@@ -31,12 +31,12 @@ final class BLEPeripheralService: NSObject, ObservableObject {
 
     private func configureService() {
         inputCharacteristic = CBMutableCharacteristic(
-            type: RDJMouseBLE.inputCharacteristicUUID,
+            type: HenrysGamingMouseBLE.inputCharacteristicUUID,
             properties: [.notify, .read],
             value: nil,
             permissions: [.readable]
         )
-        let service = CBMutableService(type: RDJMouseBLE.serviceUUID, primary: true)
+        let service = CBMutableService(type: HenrysGamingMouseBLE.serviceUUID, primary: true)
         service.characteristics = [inputCharacteristic]
         manager.add(service)
     }
@@ -44,8 +44,8 @@ final class BLEPeripheralService: NSObject, ObservableObject {
     private func startAdvertising() {
         guard manager.state == .poweredOn else { return }
         manager.startAdvertising([
-            CBAdvertisementDataServiceUUIDsKey: [RDJMouseBLE.serviceUUID],
-            CBAdvertisementDataLocalNameKey: "RDJMouse"
+            CBAdvertisementDataServiceUUIDsKey: [HenrysGamingMouseBLE.serviceUUID],
+            CBAdvertisementDataLocalNameKey: "Henry's Gaming Mouse"
         ])
         DispatchQueue.main.async { self.state = .advertising }
     }
